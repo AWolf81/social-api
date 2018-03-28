@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\User;
 use Dingo\Api\Http\Request;
 use Dingo\Api\Routing\Helpers;
+// use App\Transformers\UserTransformer; // not used
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
 {
@@ -31,8 +33,13 @@ class UserController extends Controller
 			'email'    => 'required|email|unique:users',
 			'password' => 'required'
 		] );
-		if ( User::create( $request->all() ) ) {
-			return $this->response->created();
+		$user = User::create( $request->all() );
+		if ( $user ) {
+			// return $this->response->item($user, new UserTransformer);
+			// return $this->response->json($user);
+			$token = JWTAuth::fromUser($user);
+			// dd($token);
+			return $this->response->created()->withHeader('Authorization', $token);
 		}
 
 		return $this->response->errorBadRequest();
