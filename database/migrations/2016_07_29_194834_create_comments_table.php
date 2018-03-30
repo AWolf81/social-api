@@ -19,7 +19,7 @@ class CreateCommentsTable extends Migration
 			$table->integer( 'user_id' )->unsigned();
 			$table->integer( 'status_id' )->unsigned();
 			$table->foreign( 'user_id' )->references( 'id' )->on( 'users' );
-			$table->foreign( 'status_id' )->references( 'id' )->on( 'status_updates' );
+			$table->foreign( 'status_id' )->references( 'id' )->on( 'statuses' );
 			$table->timestamps();
 		} );
 	}

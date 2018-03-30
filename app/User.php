@@ -110,6 +110,6 @@ class User extends Model implements Authenticatable, JWTSubject
 	}
 	public function statusUpdates()
 	{
-		return $this->hasMany('App\StatusUpdate');
+		return $this->hasMany('App\Status');
 	}
 }

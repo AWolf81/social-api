@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\User;
 use Dingo\Api\Http\Request;
 use Dingo\Api\Routing\Helpers;
-// use App\Transformers\UserTransformer; // not used
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Validator;
 
 class UserController extends Controller
 {
@@ -27,26 +27,25 @@ class UserController extends Controller
 	 */
 	public function register( Request $request )
 	{
-		// Validate request and throw ValidationException if data is incorrect
-		$this->validate( $request, [
+		$this->buildFailedValidationResponse($request, [
+			'unique'    => 'username/email must be unique'
+		]);
+
+		$validator = Validator::make($request->all(), [
 			'username' => 'required|unique:users',
 			'name'     => 'required',
 			'email'    => 'required|email|unique:users',
 			'password' => 'required'
 		] );
-<<<<<<< HEAD
+		
+		if ($validator->fails()) {
+			return $validator->errors();
+		}
+
 		$user = User::create( $request->all() );
 		if ( $user ) {
-			// return $this->response->item($user, new UserTransformer);
-			// return $this->response->json($user);
 			$token = JWTAuth::fromUser($user);
-			// dd($token);
 			return $this->response->created()->withHeader('Authorization', $token);
-=======
-
-		if ( User::create( $request->all() ) ) {
-			return $this->response->created();
->>>>>>> 52377537c7bb312bd24d9fbba52f3bc6d87609b2
 		}
 	}
 

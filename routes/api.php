@@ -21,14 +21,6 @@ $api->version('v1', function ($api) {
 		$api->post('/register', 'App\Http\Controllers\UserController@register');
 		$api->post('/auth', 'App\Http\Controllers\Auth\AuthController@authenticate');
 
-		// Users group
-		$api->group(['prefix' => 'users'], function ($api) {
-			$api->get('/', 'App\Http\Controllers\UserController@index');
-			$api->get('/{username}', 'App\Http\Controllers\UserController@show');
-			$api->get('/{username}/friends', 'App\Http\Controllers\UserController@friends');
-			$api->get('/{username}/status_updates', 'App\Http\Controllers\StatusController@statusUpdates');
-		});
-
 		/**
 		 * Protected routes
 		 * Must be authenticated first
@@ -36,6 +28,15 @@ $api->version('v1', function ($api) {
 		$api->group(['middleware' => 'api.auth', 'providers' => 'jwt'], function ($api) {
 			$api->get('/auth/login', 'App\Http\Controllers\AuthenticatedController@index');
 
+			// Users group
+			$api->group(['prefix' => 'users'], function ($api) {
+				$api->get('/', 'App\Http\Controllers\UserController@index');
+				$api->get('/{username}', 'App\Http\Controllers\UserController@show');
+				$api->get('/{username}/friends', 'App\Http\Controllers\UserController@friends');
+				$api->get('/{username}/status_updates', 'App\Http\Controllers\StatusController@statusUpdates');
+			});
+
+			$api->get('/status', 'App\Http\Controllers\StatusController@statusUpdates');
 			$api->post('/status_updates/create', 'App\Http\Controllers\StatusController@createStatusUpdate');
 			$api->post('/status_updates/edit', 'App\Http\Controllers\StatusController@editStatusUpdate');
 			$api->post('/status_updates/delete', 'App\Http\Controllers\StatusController@deleteStatusUpdate');

@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\User;
-use App\StatusUpdate;
+use App\Status;
+use App\Events\NewStatus;
 use Dingo\Api\Http\Request;
 use Dingo\Api\Routing\Helpers;
 
@@ -12,11 +13,24 @@ class StatusController extends Controller
 	use Helpers;
 
 	/**
+	 * Get all status
+	 * @return \Illuminate\Database\Eloquent\Collection|static[]
+	 */
+	public function index() {
+		return Status::all();
+	}
+
+	/**
 	 * @param $username
 	 *
 	 * @return mixed
 	 */
 	public function statusUpdates( $username ) {
+		// dd($username);
+		// if(!$username) {
+		// 	$user = $this->auth->user();
+		// 	$username = $user->username;
+		// }
 		return User::username( $username )->first()->statusUpdates;
 	}
 
@@ -35,10 +49,11 @@ class StatusController extends Controller
 			'message' => 'required'
 		] );
 
-		$status = new StatusUpdate();
+		$status = new Status();
 		$status->message = $request->message;
 		$user->statusUpdates()->save( $status );
-
+		
+		event(new NewStatus($status));
 		return $this->response->created();
 	}
 
@@ -53,6 +68,8 @@ class StatusController extends Controller
 		$comment = $user->statusUpdates->find( $request->id );
 		$comment->update( [ 'message' => $request->message ] );
 
+		// todo trigger event status update
+
 		return $this->response->accepted();
 	}
 
@@ -66,6 +83,8 @@ class StatusController extends Controller
 		$user    = $this->auth->user();
 		$comment = $user->statusUpdates->find( $request->id );
 		$comment->delete();
+
+		// todo trigger event status delete
 
 		return $this->response->accepted();
 	}
