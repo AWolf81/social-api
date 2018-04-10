@@ -28,8 +28,17 @@ class AuthController extends Controller
 			return response()->json( [ 'error' => 'could_not_create_token' ], 500 );
 		}
 
-		$user = $this->auth->user();
-		// all good so return the token & user
-		return response()->json( compact( 'token', 'user' ) );
+		// auth passed --> attempt is also returning a token but we'd like to have custom claims in the token
+		// so we're creating a token
+		// --> added to user model
+		// $user = $this->auth->user();
+		// $customClaims = ['user' => $user, 'baz' => 'bob'];
+
+		// $payload = JWTFactory::make($customClaims);
+
+		// $token = JWTAuth::encode($payload);
+
+		// all good so return the token
+		return response()->json( compact( 'token' ) );
 	}
 }
